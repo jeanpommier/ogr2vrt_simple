@@ -1,9 +1,18 @@
-import os
-import logging
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Generate a VRT file from a OGR-compatible source.
+The result is to be considered as a "kickoff" VRT file, to refine according to your desires
+but it will save you some time.
+"""
+
 import argparse
-from osgeo import ogr
-from jinja2 import Template
+import logging
 import re
+import os
+from jinja2 import Template
+from osgeo import ogr
 from unidecode import unidecode
 
 
@@ -15,11 +24,10 @@ db_friendly = False
 def main():
     # Input arguments
     parser = argparse.ArgumentParser(description='''
-    Reads the input VRT, iterates through the layers and produces a RDF thesaurus suitable for GeoNetwork as a 
-    geographic thesaurus. Using VRT as input, it allows you a lot of flexibility in the data sources you want to use, 
-    the VRT providing an abstraction layer between your data sources and this script.
+    Generate a VRT file from a OGR-compatible source. The result is to be considered as a "kickoff" VRT file, to 
+    refine according to your desires but it will save you some time.
     ''')
-    parser.add_argument('file', metavar='source file path', help='path to the source data file (xlsx, ods, csv, shp, gpkg, ...)')
+    parser.add_argument('file', metavar='source_file', help='path to the source data file (xlsx, ods, csv, shp, gpkg, ...)')
     parser.add_argument('-o', '--out_file',
                         help='Output file name. Default: name of the template, without the jinja extension')
     parser.add_argument('-v', '--verbose', help='verbose output (debug loglevel)',
@@ -61,7 +69,7 @@ def main():
         out_file = args.out_file
     else:
         # extract the output file name from the template file (removing the path and the jinja extension)
-        # rdf_out_file = os.path.splitext(os.path.basename(file))[0] + '.vrt'
+        # out_file = os.path.splitext(os.path.basename(file))[0] + '.vrt'
         out_file = os.path.splitext(args.file)[0] + '.vrt'
 
     ogr2vrt(args.file)
@@ -105,7 +113,7 @@ def ogr2vrt(filename):
     layers = collect_layers(filename)
     vrt_xml = layers2vrt(layers, source_file=filename)
     if vrt_xml:
-        logger.info("Writing RDF data to {}".format(out_file))
+        logger.info("Writing VRT definition to {}".format(out_file))
         with open(out_file, 'w') as f:
             f.write(vrt_xml)
 
