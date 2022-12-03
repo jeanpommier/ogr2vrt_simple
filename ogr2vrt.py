@@ -5,6 +5,9 @@
 Generate a VRT file from a OGR-compatible source.
 The result is to be considered as a "kickoff" VRT file, to refine according to your desires
 but it will save you some time.
+
+Code licensed against CC0 (Creative Commons zero) license
+Author: Jean Pommier <jean.pommier@pi-geosolutions.fr>
 """
 
 import argparse

@@ -1,4 +1,4 @@
-# vrt-kickoff
+# ogr2vrt *simple*
 **Generate a simple VRT file from an OGR-compatible dataset**
 
 Generate a VRT file from an OGR-compatible source.
