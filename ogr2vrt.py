@@ -109,7 +109,7 @@ def db_friendly_name(s):
     :param s:
     :return:
     """
-    return re.sub(r"[\s-]", "_", unidecode(s)).lower()
+    return re.sub(r"[\.\s-]", "_", unidecode(s)).lower()
 
 
 def ogr2vrt(filename):
