@@ -133,7 +133,7 @@ def collect_layers(filename):
 def layers2vrt(layers_list: list, source_file: str):
     with open(vrt_template) as file_:
         template = Template(file_.read())
-        vrt_xml = template.render(layers=layers_list, source_file=source_file)
+        vrt_xml = template.render(layers=layers_list, source_file=os.path.basename(source_file))
         return vrt_xml
 
 

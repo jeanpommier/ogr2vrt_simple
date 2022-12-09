@@ -2,7 +2,7 @@
 <OGRVRTDataSource>
   {%- for layer in layers %}
   <OGRVRTLayer name="{{ layer.layer_name }}">
-    <SrcDataSource relativeToVRT="1" shared="1">{{ source_file }}</SrcDataSource>
+    <SrcDataSource relativeToVRT="1">{{ source_file }}</SrcDataSource>
     <!--<SrcSql dialect="sqlite">SELECT * FROM '{{ layer.layer_name }}'</SrcSql>-->
     <SrcLayer>{{ layer.layer_name }}</SrcLayer>
     {%- for field in layer.fields_definition %}
