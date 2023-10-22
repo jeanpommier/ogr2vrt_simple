@@ -46,7 +46,7 @@ By default, the VRT file will be generated alongside the source file, extension 
 ```
 python3 -m venv .venv
 source .venv/bin/activate
-pip install ogr2vrt_simple
+pip install ogr2vrt-simple
 ```
 
 ---
