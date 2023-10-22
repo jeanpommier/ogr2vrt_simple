@@ -33,6 +33,30 @@ By default, the VRT file will be generated alongside the source file, extension 
 ---
 
 ## Install
+- _**You will need the GDAL/OGR library**_. It is not listed in the requirements.txt file, because the installation depends on having the proper libraries already installed on your computer.
+
+  The simplest way:
+  - install gdal, libgdal-dev, python3-dev packages on your computer
+  - install [GDAL package](https://pypi.org/project/GDAL/) using 
+  ```
+  pip install GDAL==$(gdal-config --version)
+  ```
+
+- Create a virtual env and install the app
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip install ogr2vrt_simple
+```
+
+---
+## Develop
+  
+### Compatibility
+**python >=3.10**
+
+This code users features (match-case) introduced with python 3.10. 
+
 ### Using poetry
 This is now the recommended way
 
@@ -40,8 +64,12 @@ This is now the recommended way
 - Install the dependencies: `poetry install`
 - Run the script:
 ```
-poetry shell #activate the environment
-./ogr2vrt_simple/ogr2vrt.py --help
+# Install the dependencies: 
+poetry install
+#activate the environment
+poetry shell 
+cd ogr2vrt_simple/
+python3 cli.py generate-vrt --help
 ```
 
 
@@ -55,22 +83,16 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-_**You will need the GDAL/OGR library**_. It is not listed in the requirements.txt file, because the installation depends on having the proper libraries already installed on your computer.
-
-The simplest way:
-- install gdal, libgdal-dev, python3-dev packages on your computer
-- install [GDAL package](https://pypi.org/project/GDAL/) using 
-```
-pip install GDAL==$(gdal-config --version)
-```
-        
-### Compatibility
-This code users features (match-case) introduced with python 3.10. You will therefore need python >=3.10
-
-## Run it
+_**You will need the GDAL/OGR library**_. See above in the [install](#install) section
+      
+### Run it
 ```bash
 cd ogr2vrt_simple/
+# Generate VRT file for a local file (zipped shapefile)
 python3 cli.py generate-vrt  https://raw.githubusercontent.com/OSGeo/gdal/master/autotest/ogr/data/shp/poly.zip
+
+# Generate VRT file for a remote CSV resource
+python3 cli.py generate-vrt  --with_vsicurl https://www.data.gouv.fr/fr/datasets/r/c53cd4d4-4623-4772-9b8c-bc72a9cdf4c2
 ```
 
 List options: 
@@ -78,7 +100,7 @@ List options:
 python3 cli.py generate-vrt  --help
 ````
 
-## Build
+### Build
 
 Use Poetry to build this script:
 ```
