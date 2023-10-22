@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OGRVRTDataSource>
+  {%- for layer in layers %}
+  <OGRVRTLayer name="{{ layer.layer_name }}">
+    <SrcDataSource relativeToVRT="1">{{ source_file }}</SrcDataSource>
+    <!--<SrcSql dialect="sqlite">SELECT * FROM '{{ layer.layer_name }}'</SrcSql>-->
+    <SrcLayer>{{ layer.layer_name }}</SrcLayer>
+    {%- for field in layer.fields_definition %}
+    <Field name="{{ field.output_name }}" src="{{ field.name }}" type="{{ field.type }}" {% if field.width %}width="{{ field.width }}"{% endif %}/>
+    {%- endfor %}
+  </OGRVRTLayer>
+  {%- endfor %}
+</OGRVRTDataSource>
