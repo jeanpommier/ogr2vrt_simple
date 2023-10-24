@@ -16,6 +16,11 @@ class TestDbFriendly(unittest.TestCase):
         s = db_friendly_name("Parc de véhicule au 1er janvier 2011 (en nombre de véhicules)")
         self.assertEqual(s, "parc_de_vehicule_au_1er_janvier_2011__en_nombre_de_vehicules_")
 
+    def test_starts_with_a_number(self):
+        # Databases don't much like names that start by a number
+        s = db_friendly_name("2023")
+        self.assertEqual(s, "_2023")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -18,4 +18,6 @@ def db_friendly_name(s):
     :param s:
     :return:
     """
-    return re.sub(r"[\W]", "_", unidecode(s)).lower()
+    clean = re.sub(r"[\W]", "_", unidecode(s)).lower()
+    # see https://docs.python.org/3/library/re.html#re.sub for why \g<0>
+    return re.sub(r"^[0-9]", "_\g<0>", clean)
