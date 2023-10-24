@@ -68,6 +68,9 @@ This is now the recommended way
 poetry install
 #activate the environment
 poetry shell 
+# You have to install the GDAL library using pip, it doesn't seem to work with poetry directly
+pip install GDAL==$(gdal-config --version)
+
 cd ogr2vrt_simple/
 python3 cli.py generate-vrt --help
 ```
@@ -80,6 +83,7 @@ Create a virtual env and install the requirements
 ```
 python3 -m venv .venv
 source .venv/bin/activate
+pip install GDAL==$(gdal-config --version)
 pip install -r requirements.txt
 ```
 

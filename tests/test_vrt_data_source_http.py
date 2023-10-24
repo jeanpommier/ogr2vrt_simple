@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from ogr2vrt_simple.vrt_data_sources.http_source import HttpSource
@@ -169,6 +170,12 @@ class TestHttpSource(unittest.TestCase):
 </OGRVRTDataSource>"""
         vrt_xml = src.build_vrt()
         self.assertEqual(vrt_xml, expected_xml)
+
+    def tearDown(self):
+        try:
+            os.remove('polygon.zip')
+        except:
+            pass
 
 
 if __name__ == '__main__':
