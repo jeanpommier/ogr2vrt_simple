@@ -1,4 +1,6 @@
 """ogr2vrt *simple*, generate a simple VRT file from an OGR-compatible dataset"""
+import logging
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 __version__ = "0.1.11"
 

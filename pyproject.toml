@@ -26,6 +26,9 @@ wheel = "^0.41.2"
 [tool.poetry.scripts]
 ogr2vrt_cli = "ogr2vrt_simple.cli:cli"
 
+[tool.poetry.group.dev.dependencies]
+black = "^23.10.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

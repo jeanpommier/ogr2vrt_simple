@@ -23,7 +23,12 @@ else:
     from .utils import ogr_utils, io_utils
 
 logger = logging.getLogger()
-
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 @click.group()
 def cli():
@@ -97,17 +102,17 @@ def generate_vrt(
     else:
         vrt_factory = FileSource(data_source, config)
     source_paths = vrt_factory.get_source_paths()
-    print(source_paths)
+    # print(source_paths)
     vrt_xml = vrt_factory.build_vrt()
     if vrt_xml:
         if out_file:
             with open(out_file, "w") as f:
                 f.write(vrt_xml)
-                print(f"VRT file written to {out_file}")
+                logger.info(f"VRT file written to {out_file}")
         else:
             print(vrt_xml)
     else:
-        print("error build VRT file")
+        logger.error("error build VRT file")
 
 
 def _add_dots(formats: str) -> str:
