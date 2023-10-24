@@ -13,6 +13,9 @@ import click
 import logging
 import os
 
+from ogr2vrt_simple.vrt_data_sources.file_source import FileSource
+from ogr2vrt_simple.vrt_data_sources.http_source import HttpSource
+
 # Handle the cases where you run it directly or as a built and installed package (2nd option)
 if __name__ == "__main__":
     from utils import ogr_utils, io_utils
@@ -20,10 +23,6 @@ else:
     from .utils import ogr_utils, io_utils
 
 logger = logging.getLogger()
-vrt_template: str = None
-out_file: str = None
-db_friendly: bool = False
-data_format: str = None
 
 
 @click.group()
@@ -48,16 +47,16 @@ def cli():
 @click.option(
     "-d",
     "--db_friendly",
-    is_flag=True,
+    is_flag=False,
     help="convert layer and field names to DB-friendly names (no space, accent, all-lowercase)",
 )
 @click.option(
-    "--with_vsicurl",
+    "--no_vsicurl",
     is_flag=True,
-    help="if possible, use an online connection string (with vsicurl)",
+    help="do not even try to use vsicurl. Prefer download and local use",
 )
 @click.option(
-    "--data_format",
+    "--data_formats",
     help="file extensions to look for when querying an archive (zip, tgz, etc). "
     "Defaults to a list of common data file extensions",
 )
@@ -69,8 +68,8 @@ def generate_vrt(
     out_file,
     relative_to_file,
     db_friendly,
-    with_vsicurl,
-    data_format,
+    no_vsicurl,
+    data_formats,
     logfile,
     template,
     verbose,
@@ -83,19 +82,23 @@ def generate_vrt(
     SOURCE can be a local file or a remote URL
     """
 
-    download_config = {
+    config = {
         "filename": os.path.splitext(out_file)[0] if out_file else "",
         "relative_to_file": relative_to_file,
         "db_friendly": db_friendly,
-        "with_vsicurl": with_vsicurl,
-        "data_format": data_format,
+        "no_vsicurl": no_vsicurl,
+        "data_formats": _add_dots(data_formats),
         "template": template,
     }
     data_source = source
-    source_paths = ogr_utils.build_source_paths(data_source, download_config)
+    vrt_factory = None
+    if source.startswith("http"):
+        vrt_factory = HttpSource(data_source, config)
+    else:
+        vrt_factory = FileSource(data_source, config)
+    source_paths = vrt_factory.get_source_paths()
     print(source_paths)
-    is_remote= source.startswith("http")
-    vrt_xml = ogr_utils.build_vrt(source_paths, template, is_remote)
+    vrt_xml = vrt_factory.build_vrt()
     if vrt_xml:
         if out_file:
             with open(out_file, "w") as f:
@@ -105,6 +108,23 @@ def generate_vrt(
             print(vrt_xml)
     else:
         print("error build VRT file")
+
+
+def _add_dots(formats: str) -> str:
+    """
+    In the OGR datasources we will want format extensions with a dot in front.
+    Add them if not provided by the user
+    :param formats:
+    :return:
+    """
+    if not formats:
+        return ""
+
+    fixed = []
+    for ext in formats.split(","):
+        if not ext.startswith("."):
+            fixed.append(f".{ext}")
+    return ",".join(fixed)
 
 
 if __name__ == "__main__":

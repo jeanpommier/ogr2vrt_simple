@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ogr2vrt-simple"
-version = "0.1.9"
+version = "0.2.0"
 description = "Generate a simple VRT file for data transformations"
 authors = ["Jean Pommier <jean.pommier@pi-geosolutions.fr>"]
 readme = "README.md"

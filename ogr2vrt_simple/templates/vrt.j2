@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OGRVRTDataSource>
-  {%- for layer in layers %}
+{%- for collection in layers_collection %}
+  {%- for layer in collection["layers"] %}
   <OGRVRTLayer name="{{ layer.layer_name }}">
-    <SrcDataSource relativeToVRT="1">{{ source_file }}</SrcDataSource>
+    <SrcDataSource relativeToVRT="1">{{ collection["source_path"] }}</SrcDataSource>
     <!--<SrcSql dialect="sqlite">SELECT * FROM '{{ layer.layer_name }}'</SrcSql>-->
     <SrcLayer>{{ layer.layer_name }}</SrcLayer>
     {%- for field in layer.fields_definition %}
@@ -10,4 +11,5 @@
     {%- endfor %}
   </OGRVRTLayer>
   {%- endfor %}
+{%- endfor %}
 </OGRVRTDataSource>
