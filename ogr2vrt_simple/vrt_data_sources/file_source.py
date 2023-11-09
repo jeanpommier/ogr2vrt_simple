@@ -103,44 +103,43 @@ class FileSource(AbstractSource):
         )
         ext = self.get_file_extension()
 
-        match ext:
-            case ".zip":
-                import zipfile
-                with zipfile.ZipFile(self.file_path, "r") as zip_file:
-                    file_list = zip_file.namelist()
-                    # print("The file list is:",file_list)
-                    return [
-                        f for f in file_list if os.path.splitext(f)[1] in file_extensions
-                    ]
-            case ".tar.gz" | ".tgz":
-                import tarfile
-                with tarfile.open(self.file_path, "r") as tar:
-                    file_list = tar.getmembers()
-                    # print("The file list is:", file_list)
-                    return [
-                        f.name
-                        for f in file_list
-                        if os.path.splitext(f.name)[1] in file_extensions
-                    ]
-            case '.7z':
-                import py7zr
-                with py7zr.SevenZipFile(self.file_path, mode='r') as z:
-                    return [
-                        p.filename
-                        for p in z.list()
-                        if not p.is_directory and os.path.splitext(p.filename)[1] in file_extensions
-                    ]
-            case '.rar':
-                import rarfile
-                rf = rarfile.RarFile(self.file_path)
+        if ext == ".zip":
+            import zipfile
+            with zipfile.ZipFile(self.file_path, "r") as zip_file:
+                file_list = zip_file.namelist()
+                # print("The file list is:",file_list)
+                return [
+                    f for f in file_list if os.path.splitext(f)[1] in file_extensions
+                ]
+        elif ext in (".tar.gz", ".tgz"):
+            import tarfile
+            with tarfile.open(self.file_path, "r") as tar:
+                file_list = tar.getmembers()
+                # print("The file list is:", file_list)
+                return [
+                    f.name
+                    for f in file_list
+                    if os.path.splitext(f.name)[1] in file_extensions
+                ]
+        elif ext == ".7z":
+            import py7zr
+            with py7zr.SevenZipFile(self.file_path, mode='r') as z:
                 return [
                     p.filename
-                    for p in rf.infolist()
-                    if os.path.splitext(p.filename)[1] in file_extensions
+                    for p in z.list()
+                    if not p.is_directory and os.path.splitext(p.filename)[1] in file_extensions
                 ]
-            case other:
-                print(f"Compression format not supported yet ({other})")
-                return []
+        elif ext == ".rar":
+            import rarfile
+            rf = rarfile.RarFile(self.file_path)
+            return [
+                p.filename
+                for p in rf.infolist()
+                if os.path.splitext(p.filename)[1] in file_extensions
+            ]
+        else:
+            print(f"Compression format not supported yet ({other})")
+            return []
             # TODO: add support for other compression formats
 
     def get_source_paths(self) -> list:

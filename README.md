@@ -53,9 +53,9 @@ pip install ogr2vrt-simple
 ## Develop
   
 ### Compatibility
-**python >=3.10**
+**python >=3.9**
 
-This code users features (match-case) introduced with python 3.10. 
+It probably works with any python 3 but was tested mostly under python 3.9 and above
 
 ### Using poetry
 This is now the recommended way
