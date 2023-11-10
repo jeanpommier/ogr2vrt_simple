@@ -52,7 +52,7 @@ def cli():
 @click.option(
     "-d",
     "--db_friendly",
-    is_flag=False,
+    is_flag=True,
     help="convert layer and field names to DB-friendly names (no space, accent, all-lowercase)",
 )
 @click.option(

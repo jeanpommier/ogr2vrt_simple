@@ -1,6 +1,10 @@
 # ogr2vrt *simple*
 **Generate a simple VRT file from an OGR-compatible dataset**
 
+## Python package
+This is mostly a python package, destined to be used by other applications. By itself, it is quite limited. However, we provide a small CLI tool that acts as a commandline VRT generator.
+
+## Command line interface
 Generate a VRT file from an OGR-compatible source.
 The result is to be considered as a "kickoff" VRT file, to refine according to your desires
 but it will save you some time.
@@ -48,6 +52,21 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install ogr2vrt-simple
 ```
+
+## Use the CLI
+Once installed, you will have the `ogr2vrt_cli` command available. For now, it is limited to only one sub-command, `generate-vrt`:
+```
+# Get help
+ogr2vrt_cli generate-vrt --help
+
+# Extract VRT from a remote resource
+ogr2vrt_cli generate-vrt https://raw.githubusercontent.com/OSGeo/gdal/master/autotest/ogr/data/shp/poly.zip
+
+# Works also on a API remote source:
+ogr2vrt_cli generate-vrt -d 'https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/37dd7056-6c4d-44e0-a720-32d4064f9a26/csv?millesime=2023-05&withColumnName=true&withColumnDescription=true&withColumnUnit=true&orderBy=-COMMUNE_CODE&columns=COMMUNE_CODE,COMMUNE_LIBELLE,CLASSE_VEHICULE,CATEGORIE_VEHICULE,CARBURANT,CRITAIR,PARC_2011,PARC_2012,PARC_2013,PARC_2014,PARC_2015,PARC_2016,PARC_2017,PARC_2018,PARC_2019,PARC_2020,PARC_2021,PARC_2022&COMMUNE_CODE=contains%3A09241'
+```
+
+_**Note**: as in the example above, if you are tapping into a remote URL that has special characters in it (e.g. parenthesis), you will have to surround the URL with quotes or escape the characters (this is a shell issue, not a python issue, but an issue that needs to be taken care of anyway)_
 
 ---
 ## Develop
