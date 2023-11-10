@@ -3,6 +3,7 @@ Abstract class. Implement this when you define a new data source
 """
 
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 
 class AbstractSource(ABC):
@@ -41,7 +42,7 @@ class AbstractSource(ABC):
         """
         pass
 
-    def get_data_full_size(self) -> tuple[int, str]:
+    def get_data_full_size(self) -> Tuple[int, str]:
         """
         :return: tuple : (byte size, human-friendly file size (str))
         """

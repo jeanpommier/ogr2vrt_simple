@@ -9,6 +9,7 @@ import mimetypes
 import os
 import re
 import tempfile
+from typing import Tuple, List, Dict
 import urllib
 from uuid import uuid4
 
@@ -23,7 +24,7 @@ from ogr2vrt_simple.vrt_data_sources.file_source import FileSource
 class HttpSource(AbstractSource):
     url: str = ""  # can actually be URL or file path
     type: str = "http"  # one of http, ftp, file
-    config: dict = {}
+    config: Dict = {}
     http_headers = None
     file_extension: str = None
 
@@ -32,7 +33,7 @@ class HttpSource(AbstractSource):
     use_vrt_file_source: bool = False
     local_tmp_dir = None
 
-    def __init__(self, url: str, config: dict = None):
+    def __init__(self, url: str, config: Dict = None):
         self.url = url
         self._set_type(url)
         if config:
@@ -191,7 +192,7 @@ class HttpSource(AbstractSource):
         else:
             return False
 
-    def get_data_full_size(self) -> tuple[int, str]:
+    def get_data_full_size(self) -> Tuple[int, str]:
         """
         Using HEAD request, we can retrieve the full size of the dataset.
         Can be useful in some cases, and good to display in information regarding the dataset
@@ -215,7 +216,7 @@ class HttpSource(AbstractSource):
     def url_params(self):
         return urllib.parse.urlparse(self.url).query.split("&")
 
-    def can_be_remotely_accessed(self) -> tuple[int, str]:
+    def can_be_remotely_accessed(self) -> Tuple[int, str]:
         """
         Determines if the dataset can be accessed using remote vsicurl syntax
         :return: tuple[level of confidence 0-10, comment]
@@ -285,7 +286,7 @@ class HttpSource(AbstractSource):
     def use_local_file_source(self) -> bool:
         return self.use_vrt_file_source
 
-    def get_source_paths(self) -> list:
+    def get_source_paths(self) -> List:
         """
         Generate the OGR source path with vsi prefixes and specific logic (e.g. for archives)
         Since there might be several matches, it will always return a list of candidates
@@ -375,7 +376,7 @@ class HttpSource(AbstractSource):
         # If we reached here, none of them work
         return None
 
-    def collect_layers(self, path: str = None, db_friendly: bool = False) -> list[dict]:
+    def collect_layers(self, path: str = None, db_friendly: bool = False) -> List[Dict]:
         """
         Collect layers definition for the data pointed by path (path is a vsi-enabled OGR path).
         If path is not provided, it will look at all the paths returned by get_source_paths

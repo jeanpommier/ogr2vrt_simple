@@ -1,12 +1,16 @@
 """
 Utility functions around OGR library
 """
-import importlib
 import logging
-from importlib.resources import files
+try:
+    # Python < 3.9
+    import importlib_resources as ilr
+except ImportError:
+    import importlib.resources as ilr
 
 from jinja2 import Template
 from osgeo import ogr
+from typing import List, Dict
 
 from . import data_structures
 
@@ -46,7 +50,7 @@ def collect_layers(filename: str, db_friendly: bool = True):
 
 
 def layers2vrt(
-        layers_collection: list[dict], vrt_template: str = None
+        layers_collection: List[Dict], vrt_template: str = None
 ):
     try:
         if vrt_template:
@@ -56,7 +60,7 @@ def layers2vrt(
         else:
             logging.debug(f"Using default template")
             tplcontent = (
-                importlib.resources.files("ogr2vrt_simple")
+                ilr.files("ogr2vrt_simple")
                 .joinpath(default_template)
                 .read_text(encoding="utf-8")
             )

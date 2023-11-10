@@ -5,6 +5,7 @@ Uses dataclasses
 from dataclasses import dataclass, field
 
 from osgeo import ogr
+from typing import List
 
 from . import string_utils
 
@@ -27,7 +28,7 @@ class DataLayer:
     ogr_layer: ogr.Layer
     db_friendly: bool = field(default=True)
     layer_name: str = field(init=False)
-    fields_definition: list[FieldDefinition] = field(init=False)
+    fields_definition: List[FieldDefinition] = field(init=False)
 
     def __post_init__(self):
         self.layer_name = self.ogr_layer.GetName()

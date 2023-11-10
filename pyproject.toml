@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ogr2vrt-simple"
-version = "0.2.3"
+version = "0.2.4"
 description = "Generate a simple VRT file for data transformations"
 authors = ["Jean Pommier <jean.pommier@pi-geosolutions.fr>"]
 readme = "README.md"
@@ -11,23 +11,23 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-Jinja2 = "^3.1.2"
-MarkupSafe = "^2.1.3"
-Unidecode = "^1.3.7"
+python = "^3.8"
+jinja2 = "^3.1.2"
+unidecode = "^1.3.7"
+markupsafe = "^2.1.3"
 click = "^8.1.7"
 humanize = "^4.8.0"
-#GDAL = "3.6.2"
-py7zr = "^0.20.6"
+py7zr = "^0.20.7"
 rarfile = "^4.1"
-charset-normalizer = "^3.3.1"
-wheel = "^0.41.2"
+charset-normalizer = "^3.3.2"
+wheel = "^0.41.3"
+importlib-resources = { version = "^6.1.1", python = "<3.9" }
 
 [tool.poetry.scripts]
 ogr2vrt_cli = "ogr2vrt_simple.cli:cli"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.10.1"
+black = "^23.11.0"
 
 [build-system]
 requires = ["poetry-core"]

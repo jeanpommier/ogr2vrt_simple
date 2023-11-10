@@ -4,6 +4,7 @@ Defined by a file path
 """
 import logging
 import os
+from typing import Tuple, List, Dict
 
 import charset_normalizer
 import humanize
@@ -64,7 +65,7 @@ class FileSource(AbstractSource):
         ext = self.get_file_extension()
         return ext in archive_extension_list
 
-    def get_data_full_size(self) -> tuple[int, str]:
+    def get_data_full_size(self) -> Tuple[int, str]:
         """
         :return: tuple : (byte size, human-friendly file size (str))
         """
@@ -89,7 +90,7 @@ class FileSource(AbstractSource):
 
         return None
 
-    def find_paths_in_archive(self) -> list[str]:
+    def find_paths_in_archive(self) -> List[str]:
         """
         Scan the archive's content to identify the files that might be a candidate for OGR. By default, will select all
         files which extension is found in the common_dataset_extensions list. Unless data_formats is provided in config dict
@@ -138,11 +139,11 @@ class FileSource(AbstractSource):
                 if os.path.splitext(p.filename)[1] in file_extensions
             ]
         else:
-            print(f"Compression format not supported yet ({other})")
+            print(f"Compression format not supported yet ({ext})")
             return []
             # TODO: add support for other compression formats
 
-    def get_source_paths(self) -> list:
+    def get_source_paths(self) -> List:
         """
         Generate the OGR source path with vsi prefixes and specific logic (e.g. for archives)
         Since there might be several matches, it will always return a list of candidates
@@ -157,7 +158,7 @@ class FileSource(AbstractSource):
         else:
             return [fp]
 
-    def collect_layers(self, path: str = None, db_friendly: bool = False) -> list[dict]:
+    def collect_layers(self, path: str = None, db_friendly: bool = False) -> List[Dict]:
         """
         Collect layers definition for the data pointed by path.
         If path is not provided, it will look at all the paths returned by get_source_paths

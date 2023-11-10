@@ -72,9 +72,9 @@ _**Note**: as in the example above, if you are tapping into a remote URL that ha
 ## Develop
   
 ### Compatibility
-**python >=3.9**
+**python >=3.8**
 
-It probably works with any python 3 but was tested mostly under python 3.9 and above
+Some effort was done to support python 3.8+, but if possible, we would advise to use a more recent one (3.10 or above)
 
 ### Using poetry
 This is now the recommended way

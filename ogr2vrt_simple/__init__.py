@@ -2,7 +2,7 @@
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-__version__ = "0.1.11"
+__version__ = "0.2.4"
 
 from .vrt_data_sources.http_source import HttpSource
 from .vrt_data_sources.file_source import FileSource
