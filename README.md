@@ -38,17 +38,32 @@ with the path to the vrt file to write.
 ---
 
 ## Install
-- _**You will need the GDAL/OGR library**_. It is not listed in the requirements.txt file, because the installation depends on having the proper libraries already installed on your computer.
+Summary of the operations:
+1. _**You will need the GDAL/OGR library and its python bindings**_. It is not listed in the requirements.txt file, because the installation depends on having the proper libraries already installed on your computer
+2. Then installing the ogr2vrt-simple app will be quite easy
 
-  The simplest way:
-  - on a conda environment: `conda install -c conda-forge gdal` (should be enough, then install ogr2vrt_simple)
-  - on a classic linux environment, 
-    - **install** gdal, libgdal-dev, python3-dev and build essentials packages on your computer.
-      - on debian/ubuntu: `sudo apt update && sudo apt install gdal-bin libgdal-dev python3-dev python3-venv build-essentials`
-      - on fedora: `sudo dnf makecache --refresh && sudo dnf install gdal gdal-devel gcc gcc-c++ python3-devel`
-    - **install** [GDAL package](https://pypi.org/project/GDAL/) using `pip install GDAL==$(gdal-config --version)`
+More in details:
+### 1. Install the GDAL/OGR library and its python bindings (and build dependencies)
+On a classic linux environment, using pip as the installation tool for your python packages, you will need to install quite a few build dependencies. Alternatively, you can use conda for a simpler installation (conda installs in advance a lot of stuff, but indeed makes the install less complicated afterward). Choose one of those:
+#### On a classic linux environment, 
+- **on debian/ubuntu**: 
+  ```
+  sudo apt update && sudo apt install gdal-bin libgdal-dev python3-dev python3-venv build-essentials
+  ```
+- **on fedora**: 
+  ```
+  sudo dnf makecache --refresh && sudo dnf install gdal gdal-devel gcc gcc-c++ python3-devel
+  ```
+- **install** [GDAL package](https://pypi.org/project/GDAL/) using `pip install GDAL==$(gdal-config --version)`
 
-- Create a virtual env and install the ogr2vrt-simple app:
+#### Alternative: on a conda environment: 
+```
+conda install -c conda-forge gdal
+```
+(should be enough, then install ogr2vrt_simple)
+
+### 2. Install the ogr2vrt-simple app
+Create a virtual env and install the ogr2vrt-simple app:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
