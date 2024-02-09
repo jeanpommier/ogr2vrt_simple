@@ -2,7 +2,7 @@
 **Generate a simple VRT file from an OGR-compatible dataset**
 
 ## Python package
-This is mostly a python package, destined to be used by other applications. By itself, it is quite limited. However, we provide a small CLI tool that acts as a commandline VRT generator.
+This is mostly a python package, destined to be used by other applications. By itself, it is quite limited. However, we provide a small CLI tool that acts as a quite powerful commandline VRT generator.
 
 ## Command line interface
 Generate a VRT file from an OGR-compatible source.
@@ -20,7 +20,8 @@ Are currently detected:
     - type if available (defaults to string)
     - width (precision) if available
 
-By default, the VRT file will be generated alongside the source file, extension .vrt
+By default, the VRT config will be output to the commandline. If you want it to be written to a file, use the -o option 
+with the path to the vrt file to write.
 
 ## Features
 - Support file as datasource
@@ -40,13 +41,14 @@ By default, the VRT file will be generated alongside the source file, extension 
 - _**You will need the GDAL/OGR library**_. It is not listed in the requirements.txt file, because the installation depends on having the proper libraries already installed on your computer.
 
   The simplest way:
-  - install gdal, libgdal-dev, python3-dev packages on your computer
-  - install [GDAL package](https://pypi.org/project/GDAL/) using 
-  ```
-  pip install GDAL==$(gdal-config --version)
-  ```
+  - on a conda environment: `conda install -c conda-forge gdal` (should be enough, then install ogr2vrt_simple)
+  - on a classic linux environment, 
+    - **install** gdal, libgdal-dev, python3-dev and build essentials packages on your computer.
+      - on debian/ubuntu: `sudo apt update && sudo apt install gdal-bin libgdal-dev python3-dev python3-venv build-essentials`
+      - on fedora: `sudo dnf makecache --refresh && sudo dnf install gdal gdal-devel gcc gcc-c++ python3-devel`
+    - **install** [GDAL package](https://pypi.org/project/GDAL/) using `pip install GDAL==$(gdal-config --version)`
 
-- Create a virtual env and install the app
+- Create a virtual env and install the ogr2vrt-simple app:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
@@ -67,6 +69,8 @@ ogr2vrt_cli generate-vrt -d 'https://data.statistiques.developpement-durable.gou
 ```
 
 _**Note**: as in the example above, if you are tapping into a remote URL that has special characters in it (e.g. parenthesis), you will have to surround the URL with quotes or escape the characters (this is a shell issue, not a python issue, but an issue that needs to be taken care of anyway)_
+
+
 
 ---
 ## Develop
