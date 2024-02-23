@@ -70,6 +70,21 @@ source .venv/bin/activate
 pip install ogr2vrt-simple
 ```
 
+### Install on Windows, using OSGeo4W
+OSGeo4W provides handy support for installing several useful libraries. It will make it easy to install this package.
+You will have to launch the OSGeo4W setup tool (either from a fresh new install, or look into the OSGeo4W menu, for a Setup entry). After a few steps, you can select the packages you want to install. You will have to make sure you are installing
+- gdal
+- gdal-devel
+- python3-core
+- python3-pip
+- python3-devel
+- python3-gdal
+
+- Go on and install them if necessary.
+
+Then open the OSGeo4W console and type `pip install ogr2vrt_simple`. It should install without trouble. If there are troubles, read carefully the error message, you might have missed one package to install using OSGeo4W setup tool.
+
+
 ## Use the CLI
 Once installed, you will have the `ogr2vrt_cli` command available. For now, it is limited to only one sub-command, `generate-vrt`:
 ```
