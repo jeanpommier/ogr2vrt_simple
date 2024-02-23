@@ -48,7 +48,7 @@ On a classic linux environment, using pip as the installation tool for your pyth
 #### On a classic linux environment, 
 - **on debian/ubuntu**: 
   ```
-  sudo apt update && sudo apt install gdal-bin libgdal-dev python3-dev python3-venv build-essentials
+  sudo apt update && sudo apt install gdal-bin libgdal-dev python3-dev python3-venv build-essential
   ```
 - **on fedora**: 
   ```
