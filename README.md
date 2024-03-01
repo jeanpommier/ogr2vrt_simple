@@ -54,7 +54,10 @@ On a classic linux environment, using pip as the installation tool for your pyth
   ```
   sudo dnf makecache --refresh && sudo dnf install gdal gdal-devel gcc gcc-c++ python3-devel
   ```
-- **install** [GDAL package](https://pypi.org/project/GDAL/) using `pip install GDAL==$(gdal-config --version)`
+- **install** [GDAL package](https://pypi.org/project/GDAL/) using 
+```
+pip install GDAL==$(gdal-config --version)
+```
 
 #### Alternative: on a conda environment: 
 ```
