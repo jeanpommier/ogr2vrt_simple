@@ -45,9 +45,16 @@ def cli():
     help="Output file name. Default: name of the template, without the jinja extension",
 )
 @click.option(
-    "--relative_to_file",
+    "-r",
+    "--relative",
     is_flag=True,
-    help="When building the datasource string, wheter to use absolute path or not. Defaults to absolute",
+    help="When building the datasource string, whether to use absolute path or not. Defaults to absolute",
+)
+@click.option(
+    "-s",
+    "--same",
+    is_flag=True,
+    help="Use the name and location of the datasource file for the VRT output file name. Supersedes --relative option. Will only apply with local files, not http resources.",
 )
 @click.option(
     "-d",
@@ -71,7 +78,8 @@ def cli():
 @click.argument("source")
 def generate_vrt(
     out_file,
-    relative_to_file,
+    relative,
+    same,
     db_friendly,
     no_vsicurl,
     data_formats,
@@ -84,26 +92,35 @@ def generate_vrt(
     Generate a VRT file from a OGR-compatible source. The result is to be considered as a "kickoff" VRT file, to
     refine according to your desires but it will save you some time.
 
-    SOURCE can be a local file or a remote URL
+    :source can be a local file or a remote URL
     """
 
     config = {
         "filename": os.path.splitext(out_file)[0] if out_file else "",
-        "relative_to_file": relative_to_file,
+        "relative": relative,
         "db_friendly": db_friendly,
         "no_vsicurl": no_vsicurl,
         "data_formats": _add_dots(data_formats),
         "template": template,
+        "out_file": out_file,
     }
     data_source = source
     vrt_factory = None
     if source.startswith("http"):
         vrt_factory = HttpSource(data_source, config)
     else:
+        if same:
+            # Name and place of the VRT file will match the datasource file
+            # This should only apply for file-base sources, don't move this earlier in the code
+            out_file = os.path.splitext(data_source)[0] + ".vrt"
+            config["out_file"] = out_file
+            config["relative"] = True
         vrt_factory = FileSource(data_source, config)
     source_paths = vrt_factory.get_source_paths()
     # print(source_paths)
     vrt_xml = vrt_factory.build_vrt()
+
+    # Handling output
     if vrt_xml:
         if out_file:
             with open(out_file, "w") as f:

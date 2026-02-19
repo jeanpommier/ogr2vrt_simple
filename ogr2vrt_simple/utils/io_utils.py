@@ -30,7 +30,7 @@ default_download_config = {
     "with_vsicurl": False,
     "data_format": "",
     "filename": "",
-    "relative_to_file": True,
+    "relative": True,
 }
 
 
