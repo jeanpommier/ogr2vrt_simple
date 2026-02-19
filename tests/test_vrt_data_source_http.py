@@ -95,7 +95,7 @@ class TestHttpSource(unittest.TestCase):
 
     def test_get_source_paths(self):
         conf = {
-            "relative_to_file": True,
+            "relative": True,
         }
         src = HttpSource("https://raw.githubusercontent.com/OSGeo/gdal/master/autotest/ogr/data/shp/poly.zip", conf)
         paths = src.get_source_paths()
@@ -105,7 +105,7 @@ class TestHttpSource(unittest.TestCase):
     def test_get_source_paths_with_named_zip_and_no_remote(self):
         conf = {
             "data_format": ".shp",
-            "relative_to_file": True,
+            "relative": True,
             "no_vsicurl": True,
             "filename": "polygon",
         }
@@ -116,7 +116,7 @@ class TestHttpSource(unittest.TestCase):
     def test_zipped_shp_with_relative_path_no_specified_format(self):
         conf = {
             "data_format": ".shp",
-            "relative_to_file": True,
+            "relative": True,
         }
         src = HttpSource("https://raw.githubusercontent.com/OSGeo/gdal/master/autotest/ogr/data/shp/poly.zip", conf)
         paths = src.get_source_paths()
@@ -128,7 +128,7 @@ class TestHttpSource(unittest.TestCase):
         Basic case
         """
         conf = {
-            "relative_to_file": True,
+            "relative": True,
             "db_friendly": True,
         }
         src = HttpSource("https://raw.githubusercontent.com/OSGeo/gdal/master/autotest/ogr/data/shp/poly.zip", conf)
@@ -151,7 +151,7 @@ class TestHttpSource(unittest.TestCase):
         Basic case
         """
         conf = {
-            "relative_to_file": True,
+            "relative": True,
             "db_friendly": True,
             "no_vsicurl": True,
             "filename": "polygon",

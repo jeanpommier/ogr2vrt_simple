@@ -67,7 +67,7 @@ class TestFileSource(unittest.TestCase):
     def test_get_source_paths_tgz_gpkg_with_path(self):
         conf = {
             "data_formats": ".gpkg",
-            "relative_to_file": True,
+            "relative": True,
         }
         src = FileSource(sources[5], conf)
         expected = [

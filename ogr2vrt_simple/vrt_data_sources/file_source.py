@@ -150,8 +150,6 @@ class FileSource(AbstractSource):
         :return:
         """
         fp = os.path.abspath(self.file_path)
-        if self.config.get("relative_to_file", False):
-            fp = os.path.relpath(self.file_path)
         if self.is_archive():
             pre = ogr_utils.vsiprefix_from_archive_extension(self.get_file_extension())
             return [pre + fp + "/" + p for p in self.find_paths_in_archive()]
@@ -162,6 +160,7 @@ class FileSource(AbstractSource):
         """
         Collect layers definition for the data pointed by path.
         If path is not provided, it will look at all the paths returned by get_source_paths
+        Once information is collected, adjust the paths (make them relative) if asked so
         :param path:
         :param db_friendly:
         :return:
@@ -179,6 +178,14 @@ class FileSource(AbstractSource):
             try:
                 layers = ogr_utils.collect_layers(s, db_friendly)
                 if layers:
+                    if self.config.get("relative", False):
+                        # Modify path to be relative
+                        if self.config.get("out_file"):
+                            # Relative to the output file if provided
+                            s = os.path.relpath(s, os.path.dirname(self.config.get("out_file")))
+                        else:
+                            # Or relative to the path from where this script is called
+                            s = os.path.relpath(s)
                     layers_collection.append({
                         "source_path": s,
                         "layers": layers

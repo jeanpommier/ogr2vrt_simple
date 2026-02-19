@@ -34,7 +34,13 @@ def is_valid_ogr_path(vsistring: str) -> bool:
     return in_data_source is not None
 
 
-def collect_layers(filename: str, db_friendly: bool = True):
+def collect_layers(filename: str, db_friendly: bool = True) -> List[data_structures.DataLayer]:
+    """
+    Opens each available OGR layer from `filename` file and collects its structure information
+    :param filename:
+    :param db_friendly:
+    :return: list of DataLayer objects
+    """
     layers: list[data_structures.DataLayer] = []
 
     in_data_source = ogr.Open(filename)

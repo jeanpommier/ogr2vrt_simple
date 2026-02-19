@@ -119,13 +119,13 @@ This is now the recommended way
 ```
 # Install the dependencies: 
 poetry install
-#activate the environment
-poetry shell 
+# you can activate the environment with `poetry shell` or run commands by prefixing them with `poetry run` 
 # You have to install the GDAL library using pip, it doesn't seem to work with poetry directly
-pip install GDAL==$(gdal-config --version)
+poetry run pip install GDAL==$(gdal-config --version)
 
 cd ogr2vrt_simple/
-python3 cli.py generate-vrt --help
+# poetry run python3 cli.py generate-vrt --help
+poetry run ogr2vrt_cli generate-vrt --help
 ```
 
 
