@@ -9,6 +9,7 @@ from typing import Tuple, List, Dict
 import charset_normalizer
 import humanize
 from ogr2vrt_simple.utils import ogr_utils
+from ogr2vrt_simple.utils.ogr_utils import OgrSourcePath
 
 from ogr2vrt_simple.vrt_data_sources import archive_extension_list, common_dataset_extensions
 from ogr2vrt_simple.vrt_data_sources.abstract_source import AbstractSource
@@ -143,7 +144,7 @@ class FileSource(AbstractSource):
             return []
             # TODO: add support for other compression formats
 
-    def get_source_paths(self) -> List:
+    def get_source_paths(self) -> OgrSourcePath:
         """
         Generate the OGR source path with vsi prefixes and specific logic (e.g. for archives)
         Since there might be several matches, it will always return a list of candidates
@@ -152,9 +153,10 @@ class FileSource(AbstractSource):
         fp = os.path.abspath(self.file_path)
         if self.is_archive():
             pre = ogr_utils.vsiprefix_from_archive_extension(self.get_file_extension())
-            return [pre + fp + "/" + p for p in self.find_paths_in_archive()]
+            # return [pre + fp + "/" + p for p in self.find_paths_in_archive()]
+            return OgrSourcePath(fp, [pre], self.find_paths_in_archive())
         else:
-            return [fp]
+            return OgrSourcePath(fp)
 
     def collect_layers(self, path: str = None, db_friendly: bool = False) -> List[Dict]:
         """
@@ -170,34 +172,20 @@ class FileSource(AbstractSource):
             db_friendly = self.config.get("db_friendly", False)
 
         if path:
-            source_paths = [path]
+            source_paths = OgrSourcePath(path)
         else:
             source_paths = self.get_source_paths()
-        layers_collection = []
-        for s in source_paths:
-            try:
-                layers = ogr_utils.collect_layers(s, db_friendly)
-                if layers:
-                    if self.config.get("relative", False):
-                        # Modify path to be relative
-                        if self.config.get("out_file"):
-                            # Relative to the output file if provided
-                            s = os.path.relpath(s, os.path.dirname(self.config.get("out_file")))
-                        else:
-                            # Or relative to the path from where this script is called
-                            s = os.path.relpath(s)
-                    layers_collection.append({
-                        "source_path": s,
-                        "layers": layers
-                    })
-            except Exception as e:
-                if path:
-                    # path was explicitly provided => it is expected to work
-                    logging.error(f"Error trying to collect layers for path {s}")
-                else:
-                    # This is probably expected since we might encounter some false-positive files
-                    # when processing all eligible files
-                    logging.debug(f"Error trying to collect layers for path {s}")
+
+        # Adjust paths to be relative to the output file if asked so
+        relative_to = None
+        if self.config.get("relative", False):
+            if self.config.get("out_file"):
+                relative_to = self.config.get("out_file")
+            else:
+                # Or relative to the path from where this script is called
+                relative_to = os.curdir
+
+        layers_collection = ogr_utils.collect_layers(source_paths, db_friendly, relative_to)
         return layers_collection
 
     def build_vrt(self, path: str = None, db_friendly: bool = False) -> str:
