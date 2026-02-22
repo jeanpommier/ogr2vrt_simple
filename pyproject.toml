@@ -1,0 +1,47 @@
+[project]
+name = "ogr2vrt-simple"
+version = "0.2.5"
+description = "Generate a simple VRT file for data transformations"
+authors = [
+    {name = "Jean Pommier",email = "jean.pommier@pi-geosolutions.fr"}
+]
+license-expression = "MIT"
+readme = "README.md"
+keywords = ["gdal", "ogr", "VRT", "geospatial"]
+requires-python = ">=3.10"
+dependencies = [
+    "jinja2 (>=3.1.6,<4.0.0)",
+    "unidecode (>=1.4.0,<2.0.0)",
+    "markupsafe (>=3.0.3,<4.0.0)",
+    "click (>=8.3.1,<9.0.0)",
+    "humanize (>=4.15.0,<5.0.0)",
+    "py7zr (>=1.1.0,<2.0.0)",
+    "rarfile (>=4.2,<5.0)",
+    "charset-normalizer (>=3.4.4,<4.0.0)",
+    "wheel (>=0.46.3,<0.47.0)",
+    "importlib-resources (>=6.5.2,<7.0.0)",
+    "httpx[cli] (>=0.28.1,<0.29.0)" # possibly not used
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Repository = "https://github.com/jeanpommier/ogr2vrt_simple/"
+Issues = "https://github.com/jeanpommier/ogr2vrt_simple/issues"
+Changelog = "https://github.com/jeanpommier/ogr2vrt_simple/blob/main/CHANGELOG.md"
+
+[project.scripts]
+ogr2vrt_cli = "ogr2vrt_simple.cli:cli"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "black (>=26.1.0,<27.0.0)",
+    "isort (>=7.0.0,<8.0.0)"
+]

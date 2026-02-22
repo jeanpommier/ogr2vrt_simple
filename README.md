@@ -72,7 +72,10 @@ lot of stuff, but indeed makes the install less complicated afterward). Choose o
   ```
   sudo dnf makecache --refresh && sudo dnf install gdal gdal-devel gcc gcc-c++ python3-devel
   ```
-- **install** [GDAL package](https://pypi.org/project/GDAL/) using `pip install GDAL==$(gdal-config --version)`
+- **install** [GDAL package](https://pypi.org/project/GDAL/) using 
+```bash
+pip install GDAL==$(gdal-config --version)
+```
 
 #### Alternative: on a conda environment:
 
