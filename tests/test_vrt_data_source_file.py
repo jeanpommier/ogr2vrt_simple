@@ -46,7 +46,7 @@ class TestFileSource(unittest.TestCase):
         p = os.path.abspath(sources[1])
         expected = OgrSourcePath(path_or_url=p,
                       prefix=['/vsi7z/'],
-                      archive_internal_paths=['world/locations/locations.csv'])
+                      archive_internal_paths=['/world/locations/locations.csv'])
         self.assertEqual(src.get_source_paths(), expected)
 
     def test_get_source_paths_archive_multiple(self):
@@ -54,7 +54,7 @@ class TestFileSource(unittest.TestCase):
         p = os.path.abspath(sources[4])
         expected = OgrSourcePath(path_or_url=os.path.abspath(sources[4]),
                       prefix=['/vsizip/'],
-                      archive_internal_paths=['world/locations/locations.csv','world/empty.xlsx'])
+                      archive_internal_paths=['/world/locations/locations.csv','/world/empty.xlsx'])
         self.assertEqual(src.get_source_paths(), expected)
 
     def test_get_source_paths_archive_multiple_but_declared_format(self):
@@ -64,7 +64,7 @@ class TestFileSource(unittest.TestCase):
         src = FileSource(sources[4], conf)
         expected = OgrSourcePath(path_or_url=os.path.abspath(sources[4]),
                       prefix=['/vsizip/'],
-                      archive_internal_paths=['world/empty.xlsx'])
+                      archive_internal_paths=['/world/empty.xlsx'])
         self.assertEqual(src.get_source_paths(), expected)
 
     def test_get_source_paths_tgz_gpkg_with_path(self):
@@ -75,7 +75,7 @@ class TestFileSource(unittest.TestCase):
         p = os.path.abspath(sources[5])
         expected = OgrSourcePath(path_or_url=p,
                       prefix=['/vsitar/'],
-                      archive_internal_paths=['sagui/data/layers/layers.gpkg'])
+                      archive_internal_paths=['/sagui/data/layers/layers.gpkg'])
         sp = src.get_source_paths()
         self.assertEqual(src.get_source_paths(), expected)
 

@@ -60,7 +60,7 @@ def collect_layers(ogr_source: OgrSourcePath, db_friendly: bool = True, relative
     layers_collection = []
     for p in ogr_source.archive_internal_paths:
         try:
-            full_path = "".join(ogr_source.prefix) + ogr_source.path_or_url + "/" + p
+            full_path = "".join(ogr_source.prefix) + ogr_source.path_or_url + p
             layers = collect_layers_for_file(full_path, db_friendly)
             if relative_to:
                 s = os.path.relpath(full_path, os.path.dirname(relative_to))
@@ -68,7 +68,7 @@ def collect_layers(ogr_source: OgrSourcePath, db_friendly: bool = True, relative
                 s = ogr_source.path_or_url
             if layers:
                 layers_collection.append({
-                    "source_path": "".join(ogr_source.prefix) + s + "/" + p,
+                    "source_path": "".join(ogr_source.prefix) + s + p,
                     "layers": layers
                 })
         except Exception as e:
