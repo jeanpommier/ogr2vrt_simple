@@ -1,6 +1,7 @@
 import os.path
 import unittest
 
+from ogr2vrt_simple.utils.ogr_utils import OgrSourcePath
 from ogr2vrt_simple.vrt_data_sources.file_source import FileSource
 
 sources = [
@@ -37,42 +38,45 @@ class TestFileSource(unittest.TestCase):
     def test_get_source_paths(self):
         src = FileSource(sources[0])
         p = os.path.abspath(sources[0])
-        self.assertEqual(src.get_source_paths(), [p])
+        expected = OgrSourcePath(path_or_url=p)
+        self.assertEqual(src.get_source_paths(), expected)
 
     def test_get_source_paths_archive(self):
         src = FileSource(sources[1])
         p = os.path.abspath(sources[1])
-        self.assertEqual(src.get_source_paths(), ["/vsi7z/" + p + "/world/locations/locations.csv"])
+        expected = OgrSourcePath(path_or_url=p,
+                      prefix=['/vsi7z/'],
+                      archive_internal_paths=['world/locations/locations.csv'])
+        self.assertEqual(src.get_source_paths(), expected)
 
     def test_get_source_paths_archive_multiple(self):
         src = FileSource(sources[4])
         p = os.path.abspath(sources[4])
-        expected = [
-            "/vsizip/" + p + "/world/empty.xlsx",
-            "/vsizip/" + p + "/world/locations/locations.csv",
-        ]
-        self.assertEqual(src.get_source_paths().sort(), expected.sort())
+        expected = OgrSourcePath(path_or_url=os.path.abspath(sources[4]),
+                      prefix=['/vsizip/'],
+                      archive_internal_paths=['world/locations/locations.csv','world/empty.xlsx'])
+        self.assertEqual(src.get_source_paths(), expected)
 
     def test_get_source_paths_archive_multiple_but_declared_format(self):
         conf = {
             "data_formats": ".xlsx",
         }
         src = FileSource(sources[4], conf)
-        p = os.path.abspath(sources[4])
-        expected = [
-            "/vsizip/" + p + "/world/empty.xlsx",
-        ]
+        expected = OgrSourcePath(path_or_url=os.path.abspath(sources[4]),
+                      prefix=['/vsizip/'],
+                      archive_internal_paths=['world/empty.xlsx'])
         self.assertEqual(src.get_source_paths(), expected)
 
     def test_get_source_paths_tgz_gpkg_with_path(self):
         conf = {
             "data_formats": ".gpkg",
-            "relative": True,
         }
         src = FileSource(sources[5], conf)
-        expected = [
-            "/vsitar/../sample_data/sagui.tgz/sagui/data/layers/layers.gpkg",
-        ]
+        p = os.path.abspath(sources[5])
+        expected = OgrSourcePath(path_or_url=p,
+                      prefix=['/vsitar/'],
+                      archive_internal_paths=['sagui/data/layers/layers.gpkg'])
+        sp = src.get_source_paths()
         self.assertEqual(src.get_source_paths(), expected)
 
     def test_build_vrt_simple(self):

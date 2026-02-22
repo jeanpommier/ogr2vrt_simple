@@ -16,6 +16,7 @@ from uuid import uuid4
 import humanize
 
 from ogr2vrt_simple.utils import ogr_utils, io_utils
+from ogr2vrt_simple.utils.ogr_utils import OgrSourcePath
 from ogr2vrt_simple.vrt_data_sources import archive_extension_list, common_dataset_extensions
 from ogr2vrt_simple.vrt_data_sources.abstract_source import AbstractSource
 from ogr2vrt_simple.vrt_data_sources.file_source import FileSource
@@ -77,7 +78,7 @@ class HttpSource(AbstractSource):
         :return:
         """
         if not self.http_headers:
-            req = urllib.request.Request(self.url, method="HEAD")
+            req = urllib.request.Request(self.url, method="GET")
             head = urllib.request.urlopen(req)
             self.http_headers = head.headers
         return self.http_headers
@@ -267,7 +268,7 @@ class HttpSource(AbstractSource):
         :return:
         """
         if not self.vrt_file_source:
-            filename = self.config.get("filename", None)
+            filename = self.config.get("filename", "")
             if filename:
                 # Add the extension if needed
                 if not os.path.splitext(filename)[1]:  # no extension
@@ -286,7 +287,7 @@ class HttpSource(AbstractSource):
     def use_local_file_source(self) -> bool:
         return self.use_vrt_file_source
 
-    def get_source_paths(self) -> List:
+    def get_source_paths(self) -> OgrSourcePath:
         """
         Generate the OGR source path with vsi prefixes and specific logic (e.g. for archives)
         Since there might be several matches, it will always return a list of candidates
@@ -295,22 +296,29 @@ class HttpSource(AbstractSource):
         if self.use_local_file_source():
             return self.get_local_file_source().get_source_paths()
 
-        preprefix = "CSV:" if self.get_file_extension() == ".csv" else ""
+        prefixes = []
+        if self.get_file_extension() == ".csv":
+            prefixes.append("CSV:")
+
         if self.is_archive():
             # We will have to download it for some introspection
             file_source = self.get_local_file_source()
             dataset_paths = file_source.find_paths_in_archive()
-            vsistrings = []
             # Lookup diagnostics above. If not sure that it's impossible, then we try
             if self.can_be_remotely_accessed()[0] > 0:
                 vsizip = ogr_utils.vsiprefix_from_archive_extension(self.get_file_extension())
+                if vsizip:
+                    prefixes.append(vsizip)
+
                 for d in dataset_paths:
-                    vsicurl = self._check_remote_access_archive(vsizip, d)
+                    vsicurl = self._check_remote_access_archive(prefixes, d)
                     if vsicurl:
-                        vsistrings.append(vsizip + vsicurl + self.url + "/" + d)
-            if len(vsistrings) > 0:
+                        prefixes.append(vsicurl)
+                    # We're good, stop iterating
+                    break
+            if len(prefixes) > 0 and "vsicurl" in prefixes[-1]:
                 # Then some datasets are accessible through remote protocols => it works
-                return vsistrings
+                return OgrSourcePath(self.url, prefixes, dataset_paths)
             else:
                 # Then probably vsi remote protocols are not supported. Falling back on local files
                 logging.warning("It is apparently not possible to use vsicurl syntax with this dataset. You will "
@@ -318,12 +326,13 @@ class HttpSource(AbstractSource):
                                 "saved in a temporary folder")
                 return self.get_local_file_source(use=True).get_source_paths()
         else:  # not an archive
-            vsi = None
+            vsicurl = None
             # Lookup diagnostics above. If not sure that it's impossible, then we try
             if self.can_be_remotely_accessed()[0] > 0:
-                vsi = self._check_remote_access()
-            if vsi:
-                return [preprefix + vsi + self.url]
+                vsicurl = self._check_remote_access()
+            if vsicurl:
+                prefixes.append(vsicurl)
+                return OgrSourcePath(self.url, prefixes)
             else:
                 # Falling back on local files
                 logging.warning("It is apparently not possible to use vsicurl syntax with this dataset. You will "
@@ -353,23 +362,23 @@ class HttpSource(AbstractSource):
             # If we reached here, none of them work
             return None
 
-    def _check_remote_access_archive(self, vsizip: str, path: str):
+    def _check_remote_access_archive(self, prefixes: list[str], path: str):
         """
         Find with vsicurl protocol is functional if any. For archive datasets, we have to provide also the
         vsizip or similar prefix and know the path in the archive
         Returns None if no remote protocol works
-        :param vsizip: will be one of the values provided by ogr_utils.vsimappings
+        :param prefixes: list of prefixes, can include "CSV:" or vsimappings matching ogr_utils.vsimappings
         :param path: path to the data in the archive
         :return:
         """
         if self.is_streaming() or not self.get_data_full_size():
             # We can have a go at streaming protocol
-            vsistring = vsizip + "/vsicurl_streaming/" + self.url + "/" + path
+            vsistring = "".join(prefixes) + "/vsicurl_streaming/" + self.url + "/" + path
             if ogr_utils.is_valid_ogr_path(vsistring):
                 return "/vsicurl_streaming/"
 
         # in case it didn't work or isn't streaming protocol, we try with vsicurl classic
-        vsistring = vsizip + "/vsicurl/" + self.url + "/" + path
+        vsistring = "".join(prefixes) + "/vsicurl/" + self.url + "/" + path
         if ogr_utils.is_valid_ogr_path(vsistring):
             return "/vsicurl/"
 
@@ -389,26 +398,10 @@ class HttpSource(AbstractSource):
             db_friendly = self.config.get("db_friendly", False)
 
         if path:
-            source_paths = [path]
+            source_paths = OgrSourcePath(path)
         else:
             source_paths = self.get_source_paths()
-        layers_collection = []
-        for s in source_paths:
-            try:
-                layer = ogr_utils.collect_layers(s, db_friendly)
-                if layer:
-                    layers_collection.append({
-                        "source_path": s,
-                        "layers": layer
-                    })
-            except Exception as e:
-                if path:
-                    # path was explicitly provided => it is expected to work
-                    logging.error(f"Error trying to collect layers for path {s}")
-                else:
-                    # This is probably expected since we might encounter some false-positive files
-                    # when processing all eligible files
-                    logging.debug(f"Error trying to collect layers for path {s}")
+        layers_collection = ogr_utils.collect_layers(source_paths, db_friendly, None)
         return layers_collection
 
     def build_vrt(self, path: str = None, db_friendly: bool = False) -> str:

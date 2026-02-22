@@ -2,6 +2,9 @@
 Utility functions around OGR library
 """
 import logging
+import os
+from dataclasses import dataclass, field
+
 try:
     # Python < 3.9
     import importlib_resources as ilr
@@ -10,7 +13,7 @@ except ImportError:
 
 from jinja2 import Template
 from osgeo import ogr
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from . import data_structures
 
@@ -24,6 +27,17 @@ vsimappings = {
 }
 
 
+@dataclass
+class OgrSourcePath:
+    """
+    A path to an OGR layer is more complicated than a simple os.path or URL. It can chain several vsi* prefixes, os.path
+    and, in the case of an archive or a multiple-layers files like geopackage, an internal path to the layer.
+    """
+    path_or_url: str
+    prefix: List[str] = field(default_factory=list)
+    archive_internal_paths: List[str] = field(default_factory=lambda: [""])
+
+
 def is_valid_ogr_path(vsistring: str) -> bool:
     """
     Tries to open the dataset addresses by the vsistring
@@ -34,11 +48,42 @@ def is_valid_ogr_path(vsistring: str) -> bool:
     return in_data_source is not None
 
 
-def collect_layers(filename: str, db_friendly: bool = True) -> List[data_structures.DataLayer]:
+def collect_layers(ogr_source: OgrSourcePath, db_friendly: bool = True, relative_to: str | os.PathLike = None) -> List[dict]:
+    """
+    Opens each available OGR layer from `ogr_source` path and collects its structure information
+    :param ogr_source:
+    :param db_friendly:
+    :param relative_to: if provided, relative paths will be made relative to this path. Should only be used on
+    file-based paths
+    :return: list of DataLayer objects
+    """
+    layers_collection = []
+    for p in ogr_source.archive_internal_paths:
+        try:
+            full_path = "".join(ogr_source.prefix) + ogr_source.path_or_url + "/" + p
+            layers = collect_layers_for_file(full_path, db_friendly)
+            if relative_to:
+                s = os.path.relpath(full_path, os.path.dirname(relative_to))
+            else:
+                s = ogr_source.path_or_url
+            if layers:
+                layers_collection.append({
+                    "source_path": "".join(ogr_source.prefix) + s + "/" + p,
+                    "layers": layers
+                })
+        except Exception as e:
+            # This is probably expected since we might encounter some false-positive files
+            # when processing all eligible files
+            logging.debug(f"Error trying to collect layers for path {OgrSourcePath}: {e}")
+    return layers_collection
+
+
+def collect_layers_for_file(filename: str, db_friendly: bool = True) -> List[data_structures.DataLayer]:
     """
     Opens each available OGR layer from `filename` file and collects its structure information
-    :param filename:
+    :param filename: full path to an OGR supported file (can be inside an archive)
     :param db_friendly:
+    :param relative_to: if provided, relative paths will be made relative to this path
     :return: list of DataLayer objects
     """
     layers: list[data_structures.DataLayer] = []
@@ -49,10 +94,7 @@ def collect_layers(filename: str, db_friendly: bool = True) -> List[data_structu
         layers.append(
             data_structures.DataLayer(ogr_layer=layer, db_friendly=db_friendly)
         )
-    if len(layers) > 0:
-        return layers
-    else:
-        return None
+    return layers
 
 
 def layers2vrt(
