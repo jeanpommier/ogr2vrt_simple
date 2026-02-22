@@ -373,12 +373,12 @@ class HttpSource(AbstractSource):
         """
         if self.is_streaming() or not self.get_data_full_size():
             # We can have a go at streaming protocol
-            vsistring = "".join(prefixes) + "/vsicurl_streaming/" + self.url + "/" + path
+            vsistring = "".join(prefixes) + "/vsicurl_streaming/" + self.url + path
             if ogr_utils.is_valid_ogr_path(vsistring):
                 return "/vsicurl_streaming/"
 
         # in case it didn't work or isn't streaming protocol, we try with vsicurl classic
-        vsistring = "".join(prefixes) + "/vsicurl/" + self.url + "/" + path
+        vsistring = "".join(prefixes) + "/vsicurl/" + self.url + path
         if ogr_utils.is_valid_ogr_path(vsistring):
             return "/vsicurl/"
 

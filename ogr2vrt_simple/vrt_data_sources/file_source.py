@@ -154,7 +154,7 @@ class FileSource(AbstractSource):
         if self.is_archive():
             pre = ogr_utils.vsiprefix_from_archive_extension(self.get_file_extension())
             # return [pre + fp + "/" + p for p in self.find_paths_in_archive()]
-            return OgrSourcePath(fp, [pre], self.find_paths_in_archive())
+            return OgrSourcePath(fp, [pre], ["/"+p for p in self.find_paths_in_archive()])
         else:
             return OgrSourcePath(fp)
 
